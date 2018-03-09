@@ -1,16 +1,19 @@
 package com.cool.config;
 
+import com.cool.grabber.conversion.GrabberConfigEditor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.CustomEditorConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -25,6 +28,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -33,23 +38,25 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Configuration
 @ComponentScan(basePackages = {
+        "com.cool.aop",
         "com.cool.config",
         "com.cool.entities",
         "com.cool.exception",
         "com.cool.file",
+        "com.cool.grabber",
         "com.cool.http",
         "com.cool.log",
         "com.cool.models",
         "com.cool.repository",
         "com.cool.services",
-        "com.cool.util",
-        "com.cool.aop"
+        "com.cool.util"
 },
         excludeFilters = {//定义不需要扫描的Filters
         })
 @PropertySources({
         @PropertySource("classpath:configDatabase.properties"),
-        @PropertySource("classpath:configProject.properties")
+        @PropertySource("classpath:configProject.properties"),
+        @PropertySource("classpath:httpClient.properties")
 })
 @EnableTransactionManagement
 /*
@@ -134,24 +141,24 @@ public class RootConfig implements EnvironmentAware, ApplicationContextAware {
      * @return
      */
     @Bean
-    public ThreadPoolTaskScheduler defaultAutoRobotTaskScheduler() {
+    public ThreadPoolTaskScheduler defaultGrabberBehaviorTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setThreadNamePrefix("AutoRobot-");
-        scheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
+        scheduler.setThreadNamePrefix("Grabber-Behavior-");
+        scheduler.setPoolSize(Runtime.getRuntime().availableProcessors() * 32);
         scheduler.setRemoveOnCancelPolicy(true);
         return scheduler;
     }
 
     /**
-     * 动态添加代理定时返点的任务执行器
+     * 用于抓取器的任务执行器
      *
      * @return
      */
     @Bean
-    public ThreadPoolTaskScheduler defaultProxyPayBackTaskScheduler() {
+    public ThreadPoolTaskScheduler defaultGrabberTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setThreadNamePrefix("PayBack-");
-        scheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
+        scheduler.setThreadNamePrefix("Grabber-");
+        scheduler.setPoolSize(Runtime.getRuntime().availableProcessors() * 4);
         scheduler.setRemoveOnCancelPolicy(true);
         return scheduler;
     }
@@ -181,7 +188,7 @@ public class RootConfig implements EnvironmentAware, ApplicationContextAware {
      *
      * @return
      */
-    @Bean(name = ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
+    @Bean(name = {ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME, "taskExecutor"})
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setThreadNamePrefix("CoolTaskScheduler-");
@@ -250,6 +257,13 @@ public class RootConfig implements EnvironmentAware, ApplicationContextAware {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    @Bean
+    public CustomEditorConfigurer customEditorConfigurer() {
+        CustomEditorConfigurer customEditorConfigurer = new CustomEditorConfigurer();
+        customEditorConfigurer.setCustomEditors(Collections.singletonMap(List.class, GrabberConfigEditor.class));
+        return customEditorConfigurer;
     }
 
 }
