@@ -1,5 +1,6 @@
 package com.cool.http;
 
+import com.cool.config.RootConfig;
 import org.apache.http.Header;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
@@ -11,6 +12,12 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ContextResource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.File;
 import java.io.FileReader;
@@ -52,7 +59,7 @@ public abstract class AbstractSingleGetHttpClient {
      */
     private static int cmRefCount = 0;
     private Map<String, Header> headers;
-    private final Header[] defaultHeaders = {
+    protected final Header[] defaultHeaders = {
             new BasicHeader("Accept", "application/json, text/javascript, */*; q=0.01"),
             new BasicHeader("Accept-Encoding", "gzip, deflate, sdch"),
             new BasicHeader("Accept-Language", "h-CN,zh;q=0.8,en;q=0.6"),
@@ -65,14 +72,12 @@ public abstract class AbstractSingleGetHttpClient {
     };
 
     public AbstractSingleGetHttpClient(){
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileReader(new File(Thread.currentThread().getContextClassLoader().getResource("/httpClient.properties").toURI())));
-            DEFAULT_REQUEST_TIMEOUT = Integer.parseInt(properties.getProperty("httpClient.request.timeout"));
-            DEFAULT_SOCK_TIMEOUT = Integer.parseInt(properties.getProperty("httpClient.sock.timeout"));
-            DEFAULT_CONNECT_TIMEOUT = Integer.parseInt(properties.getProperty("httpClient.connect.timeout"));
-        } catch (IOException | NumberFormatException | URISyntaxException e) {
-            logger.warn("加载网络超时配置失败，将使用默认配置", e);
+        final Environment environment = RootConfig.rootApplicationContext.getEnvironment();
+        try {DEFAULT_REQUEST_TIMEOUT = Integer.parseInt(environment.getRequiredProperty("httpClient.request.timeout"));
+            DEFAULT_SOCK_TIMEOUT = Integer.parseInt(environment.getRequiredProperty("httpClient.sock.timeout"));
+            DEFAULT_CONNECT_TIMEOUT = Integer.parseInt(environment.getRequiredProperty("httpClient.connect.timeout"));
+        } catch (NumberFormatException | IllegalStateException e) {
+            logger.debug("加载网络超时配置失败，将使用默认配置", e);
             DEFAULT_REQUEST_TIMEOUT = 800;
             DEFAULT_SOCK_TIMEOUT = 300;
             DEFAULT_CONNECT_TIMEOUT = 500;
@@ -182,4 +187,5 @@ public abstract class AbstractSingleGetHttpClient {
         }
         super.finalize();
     }
+
 }

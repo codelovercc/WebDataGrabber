@@ -3,6 +3,7 @@ package com.cool.services;
 import org.hibernate.CacheMode;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public interface Service<T> {
     T delete(T entity);
     int delete(Serializable id);
     Serializable save(T entity);
+    void saveAll(Collection<T> entities);
     void update(T entity);
 
 }

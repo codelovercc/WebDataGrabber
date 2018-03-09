@@ -5,6 +5,7 @@ import org.hibernate.CacheMode;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -54,6 +55,11 @@ public abstract class AbstractService<T> implements Service<T> {
     @Override
     public Serializable save(T entity) {
         return baseRepository.save(entity);
+    }
+
+    @Override
+    public void saveAll(Collection<T> entities) {
+        baseRepository.saveAll(entities);
     }
 
     @Override

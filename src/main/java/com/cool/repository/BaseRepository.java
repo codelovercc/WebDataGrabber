@@ -3,6 +3,7 @@ package com.cool.repository;
 import org.hibernate.CacheMode;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -85,4 +86,5 @@ public interface BaseRepository<T> {
      */
     long findCount(WhereHqlGetter whereHqlGetter);
 
+    Collection<Serializable> saveAll(Collection<T> entities);
 }
