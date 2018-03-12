@@ -6,7 +6,6 @@ package com.cool.exception;
 public class ProjectRunTimeException extends RuntimeException {
 
     public ProjectRunTimeException() {
-        super();
     }
 
     public ProjectRunTimeException(String message) {
@@ -19,5 +18,9 @@ public class ProjectRunTimeException extends RuntimeException {
 
     public ProjectRunTimeException(Throwable cause) {
         super(cause);
+    }
+
+    public ProjectRunTimeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

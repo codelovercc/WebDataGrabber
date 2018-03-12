@@ -1,9 +1,9 @@
 package com.cool.grabber.impl;
 
 import com.cool.grabber.Grabber;
-import com.cool.grabber.behavior.impl.AmazonBestSellersListGrabberBehavior;
-import com.cool.grabber.behavior.impl.AmazonBestSellersListPageLinkGrabberBehavior;
-import com.cool.grabber.behavior.impl.AmazonClothingProductInfoGrabberBehavior;
+import com.cool.grabber.behavior.amazon.impl.AmazonBestSellersListGrabberBehavior;
+import com.cool.grabber.behavior.amazon.impl.AmazonBestSellersListPageLinkGrabberBehavior;
+import com.cool.grabber.behavior.amazon.impl.AmazonClothingProductInfoGrabberBehavior;
 import com.cool.grabber.exception.GrabberException;
 import com.cool.models.AmazonClothingProduct;
 import com.cool.models.AmazonSimpleProduct;

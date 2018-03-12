@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +71,13 @@ public abstract class AbstractGrabberBehavior<T> extends AbstractSingleGetHttpCl
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new GrabberStatusInvalidException("未能获取数据,服务器没有正常响应，响应码: " + response.getStatusLine().getStatusCode());
             }
+            EntityUtils.consumeQuietly(httpEntity);
             return getModels(content, grabLink);
         } catch (IOException | ProjectException e) {
+            httpGet.abort();
+            getCm().closeExpiredConnections();
             throw new GrabberException(e);
+        }finally {
         }
     }
 

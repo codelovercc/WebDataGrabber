@@ -1,9 +1,11 @@
 package com.cool.grabber.exception;
 
+import com.cool.exception.ProjectException;
+
 /**
  * Created by codelover on 18/3/7.
  */
-public class GrabberException extends Exception {
+public class GrabberException extends ProjectException {
     public GrabberException() {
     }
 
