@@ -1,5 +1,6 @@
 package com.cool.models;
 
+import com.cool.util.KeyValuePair;
 import com.cool.util.Range;
 
 import java.util.Date;
@@ -77,6 +78,11 @@ public class AmazonClothingProduct extends AbstractAmazonProduct {
      * 本类中的排名
      */
     private int rankOfSecondKind;
+
+    /**
+     * 在类型中的排名，key为排名，value为排名对应的类型,集合中第一个元素为最大类的排名
+     */
+    private List<KeyValuePair<Integer, String>> rankInKind;
 
     /**
      * 商品链接
@@ -222,5 +228,13 @@ public class AmazonClothingProduct extends AbstractAmazonProduct {
 
     public void setProductThumbnail(String productThumbnail) {
         this.productThumbnail = productThumbnail;
+    }
+
+    public List<KeyValuePair<Integer, String>> getRankInKind() {
+        return rankInKind;
+    }
+
+    public void setRankInKind(List<KeyValuePair<Integer, String>> rankInKind) {
+        this.rankInKind = rankInKind;
     }
 }

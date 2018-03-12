@@ -1,9 +1,11 @@
 package com.cool.grabber.exception;
 
+import com.cool.exception.ProjectRunTimeException;
+
 /**
  * Created by codelover on 18/3/7.
  */
-public class GrabberRumTimeException extends RuntimeException {
+public class GrabberRumTimeException extends ProjectRunTimeException {
     public GrabberRumTimeException() {
     }
 

@@ -71,9 +71,10 @@ public abstract class AbstractSingleGetHttpClient {
             new BasicHeader("X-Requested-With", "XMLHttpRequest")
     };
 
-    public AbstractSingleGetHttpClient(){
+    public AbstractSingleGetHttpClient() {
         final Environment environment = RootConfig.rootApplicationContext.getEnvironment();
-        try {DEFAULT_REQUEST_TIMEOUT = Integer.parseInt(environment.getRequiredProperty("httpClient.request.timeout"));
+        try {
+            DEFAULT_REQUEST_TIMEOUT = Integer.parseInt(environment.getRequiredProperty("httpClient.request.timeout"));
             DEFAULT_SOCK_TIMEOUT = Integer.parseInt(environment.getRequiredProperty("httpClient.sock.timeout"));
             DEFAULT_CONNECT_TIMEOUT = Integer.parseInt(environment.getRequiredProperty("httpClient.connect.timeout"));
         } catch (NumberFormatException | IllegalStateException e) {
@@ -82,10 +83,12 @@ public abstract class AbstractSingleGetHttpClient {
             DEFAULT_SOCK_TIMEOUT = 300;
             DEFAULT_CONNECT_TIMEOUT = 500;
         }
+        int maxTotal = Integer.parseInt(environment.getRequiredProperty("httpClient.maxTotal"));
+        int defaultMaxPerRoute = Integer.parseInt(environment.getRequiredProperty("httpClient.defaultMaxPerRoute"));
         if (cm == null) {//如果链接池没有初始化
-            synchronized (AbstractSingleGetHttpClient.class){
-                if(cm == null){
-                    initCM();
+            synchronized (AbstractSingleGetHttpClient.class) {
+                if (cm == null) {
+                    initCM(maxTotal, defaultMaxPerRoute);
                     Runtime runtime = Runtime.getRuntime();
                     runtime.addShutdownHook(new Thread(this::releaseCM));
                 }
@@ -121,21 +124,23 @@ public abstract class AbstractSingleGetHttpClient {
     /**
      * 初始化链接池
      */
-    private static void initCM() {
+    private static void initCM(int maxTotal, int defaultMaxPerRoute) {
+        logger.info("正在初始化单一链接池");
         cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(50);
-        cm.setDefaultMaxPerRoute(20);
+        cm.setMaxTotal(maxTotal);
+        cm.setDefaultMaxPerRoute(defaultMaxPerRoute);
         logger.info("单一链接池已经初始化");
     }
+
     protected void releaseCM() {
-        if(httpClient != null) {
+        if (httpClient != null) {
             try {
                 httpClient.close();
             } catch (IOException e) {
                 logger.error("关闭HTTPClient对象出错");
             }
         }
-        if(cm != null){
+        if (cm != null) {
             cm.close();
         }
         logger.info("链接池已经释放");
@@ -143,23 +148,27 @@ public abstract class AbstractSingleGetHttpClient {
 
     /**
      * 调用此方法，使得子类能够改变要访问网址的对象
+     *
      * @param httpGet
      */
-    protected void setHttpGet(HttpGet httpGet){
+    protected void setHttpGet(HttpGet httpGet) {
         this.httpGet = httpGet;
     }
 
     /**
      * 子类返回对象
+     *
      * @return
      */
     protected abstract HttpGet createHttpGet();
 
     /**
      * 子类返回对象
+     *
      * @return
      */
     protected abstract HttpContext createHttpContext();
+
     /**
      * 子类返回更新引用页
      */
@@ -172,7 +181,7 @@ public abstract class AbstractSingleGetHttpClient {
             headers.put(name, new BasicHeader(name, value));
     }
 
-    public void removeHeader(String name){
+    public void removeHeader(String name) {
         headers.remove(name);
     }
 

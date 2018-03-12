@@ -19,4 +19,8 @@ public class ProjectIOException extends ProjectException {
     public ProjectIOException(Throwable cause) {
         super(cause);
     }
+
+    public ProjectIOException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

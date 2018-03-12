@@ -17,5 +17,10 @@ public class ProjectIORunTimeException extends ProjectRunTimeException {
 
     public ProjectIORunTimeException(Throwable cause) {
         super(cause);
+
+    }
+
+    public ProjectIORunTimeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

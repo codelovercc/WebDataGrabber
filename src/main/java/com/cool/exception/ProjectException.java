@@ -6,7 +6,6 @@ package com.cool.exception;
 public abstract class ProjectException extends Exception {
 
     public ProjectException() {
-        super();
     }
 
     public ProjectException(String message) {
@@ -19,5 +18,9 @@ public abstract class ProjectException extends Exception {
 
     public ProjectException(Throwable cause) {
         super(cause);
+    }
+
+    public ProjectException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -1,6 +1,7 @@
-package com.cool.grabber.behavior.impl;
+package com.cool.grabber.behavior.amazon.impl;
 
 import com.cool.grabber.behavior.AbstractGrabberBehavior;
+import com.cool.grabber.behavior.amazon.AbstractAmazonGrabberBehavior;
 import com.cool.grabber.exception.GrabberInvalidDataException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +17,7 @@ import java.util.List;
  * 用来抓取排行页面中的分页链接
  */
 @Component
-public class AmazonBestSellersListPageLinkGrabberBehavior extends AbstractGrabberBehavior<String> {
+public class AmazonBestSellersListPageLinkGrabberBehavior extends AbstractAmazonGrabberBehavior<String> {
 
     @Override
     protected List<String> getModels(String data, String fromLink) throws GrabberInvalidDataException {
@@ -25,7 +26,7 @@ public class AmazonBestSellersListPageLinkGrabberBehavior extends AbstractGrabbe
         List<String> list = new ArrayList<>(5);
         for (Element e :
                 elements) {
-            list.add(e.attr("href"));
+            list.add(e.attr("abs:href"));
         }
         return list;
     }
