@@ -4,4 +4,4 @@
 <br>本例还没有完成抓取数据的持久化
 <br>本例实现了对amazon的排行版中的服装类进行了抓取
 <br>具体内容请参考源码中的注释，本项目为java应用程序，main方法位于Application类中
-<br>联系作者：微信 codelovercc 邮件 codelovercc@gmail.com
+<br>联系作者: qq 331528660 微信 codelovercc 邮件 codelovercc@gmail.com
